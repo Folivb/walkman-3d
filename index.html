@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walkman 3D Interactivo - Three.js</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Loading Screen Overlay -->
+  <div id="loader" class="loader-overlay">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <h2>Cargando Walkman 3D...</h2>
+      <p id="loader-status">Inicializando motor de renderizado Three.js</p>
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Banner / Title -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="badge">RETRO TECH 3D</span>
+      <h1>WALKMAN STEREO <span>PRO</span></h1>
+    </div>
+    <div class="header-status">
+      <div class="status-indicator" id="power-led"></div>
+      <span id="power-text">APAGADO</span>
+    </div>
+    <button id="btn-reset-cam" class="header-action-btn">Reset Camara</button>
+  </header>
+
+  <!-- Spotify Connect Button (External) -->
+  <button id="btn-spotify-connect" class="spotify-connect-btn">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+    </svg>
+    <span id="spotify-connect-text">Conectar Spotify</span>
+  </button>
+
+  <!-- 3D Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- Spotify Now Playing Overlay -->
+  <div id="spotify-overlay" class="spotify-overlay hidden">
+    <div class="spotify-overlay-inner">
+      <div class="spotify-overlay-header">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="#1db954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        <span id="overlay-status">REPRODUCIENDO</span>
+      </div>
+      <div id="overlay-title" class="spotify-overlay-title">Sin cancion</div>
+      <div id="overlay-artist" class="spotify-overlay-artist"></div>
+      <div class="spotify-overlay-progress">
+        <div id="overlay-bar" class="spotify-overlay-bar"></div>
+      </div>
+      <div class="spotify-overlay-bottom">
+        <span id="overlay-time">00:00 / 00:00</span>
+        <span id="overlay-vol">VOL 70%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D Floating Tooltip for Hovered Buttons -->
+  <div id="button-tooltip" class="button-tooltip"></div>
+
+  <!-- Instruction Card -->
+  <div class="instruction-card">
+    <h3>💡 Instrucciones de Uso</h3>
+    <ul>
+      <li><span class="key">Haz click DIRECTAMENTE</span> en los botones del modelo 3D.</li>
+      <li><span class="key" style="color:#ff2a4b;">🔴 Botón POWER</span>: Enciende la pantalla y la música.</li>
+      <li><span class="key" style="color:#ffb703;">🟡 Botón MODO</span>: Cambia de género (Synthwave, Lo-Fi, Rock, Pop).</li>
+      <li><span class="key" style="color:#00ff88;">🟢 Botón PLAY</span>: Pausa o reanuda la canción.</li>
+      <li><span class="key" style="color:#00f2fe;">🔵 Botones VOL + / -</span>: Regula el volumen.</li>
+      <li><span class="key" style="color:#ff007f;">🟣 Botón ADELANTE</span>: Pasa a la siguiente canción.</li>
+      <li><span class="key" style="color:#9b51e0;">🟣 Botón ATRÁS</span>: 1 click reinicia. <b>2 clicks rápidos</b> va a la anterior.</li>
+      <li><span class="key">Mouse / Touch</span>: Arrastra para girar en 3D, rueda para Zoom.</li>
+      <li><span class="key" style="color:#1db954;">Spotify</span>: Haz click en "Conectar Spotify" para escuchar tu musica real.</li>
+    </ul>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Dynamic Screen Canvas (Rendered onto 3D Screen Mesh) -->
+  <canvas id="screen-canvas" width="1024" height="512" style="display:none;"></canvas>
+
+  <script id="spotify-config" src="spotify-config.js"></script>
+  <script type="module" src="app.js?v=20260928_v7"></script>
+</body>
+</html>

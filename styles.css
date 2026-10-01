@@ -1,0 +1,400 @@
+:root {
+  --bg-color: #f5f3ee;
+  --panel-bg: rgba(255, 255, 255, 0.85);
+  --panel-border: rgba(0, 0, 0, 0.08);
+  --accent-cyan: #0ea5e9;
+  --accent-magenta: #e11d48;
+  --accent-yellow: #f59e0b;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-mint: #2dd4bf;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --glow-subtle: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #ffffff 0%, #eeebe1 100%);
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-main);
+}
+
+#canvas-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Header Banner */
+.app-header {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 12px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--glow-subtle);
+}
+
+.brand .badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #0ea5e9, #2dd4bf);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.brand h1 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: var(--text-main);
+}
+
+.brand h1 span {
+  color: var(--accent-cyan);
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-main);
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.status-indicator.active {
+  background-color: var(--accent-green);
+  box-shadow: 0 0 10px var(--accent-green);
+}
+
+.header-action-btn {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.header-action-btn:hover {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+/* Floating 3D Tooltip */
+.button-tooltip {
+  position: absolute;
+  z-index: 50;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid var(--accent-cyan);
+  color: #0f172a;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translate(-50%, -130%);
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.button-tooltip.show {
+  opacity: 1;
+}
+
+/* Loader Overlay */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: #f5f3ee;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.loader-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-content {
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.loader-spinner {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+  border: 4px solid rgba(0, 0, 0, 0.08);
+  border-left-color: var(--accent-cyan);
+  border-top-color: var(--accent-mint);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.loader-content p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-mint), var(--accent-cyan));
+  transition: width 0.3s ease;
+}
+
+/* Instruction Card */
+.instruction-card {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
+  width: 320px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  padding: 18px;
+  box-shadow: var(--glow-subtle);
+}
+
+.instruction-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-main);
+}
+
+.instruction-card ul {
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+.instruction-card ul li .key {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+/* Toast Notifications */
+.toast {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 20;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 10px 26px;
+  border-radius: 30px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Spotify Connect Button (External Floating) */
+.spotify-connect-btn {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1db954;
+  border: none;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: 'Outfit', sans-serif;
+  box-shadow: 0 6px 24px rgba(29, 185, 84, 0.4);
+}
+
+.spotify-connect-btn:hover {
+  background: #1ed760;
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 8px 32px rgba(29, 185, 84, 0.55);
+}
+
+.spotify-connect-btn.connected {
+  background: rgba(29, 185, 84, 0.15);
+  border: 2px solid #1db954;
+  color: #1db954;
+  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.2);
+}
+
+.spotify-connect-btn.connected:hover {
+  background: rgba(29, 185, 84, 0.25);
+  transform: translateX(-50%) scale(1.05);
+}
+
+.spotify-connect-btn svg {
+  flex-shrink: 0;
+}
+
+.spotify-overlay {
+  display: none !important;
+}
+
+.spotify-overlay-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spotify-overlay-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #1db954;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.spotify-overlay-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotify-overlay-artist {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: #8a99ad;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotify-overlay-progress {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.spotify-overlay-bar {
+  height: 100%;
+  width: 0%;
+  background: #1db954;
+  border-radius: 2px;
+  transition: width 0.5s linear;
+}
+
+.spotify-overlay-bottom {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #64748b;
+}
+
+@media (max-width: 768px) {
+  .instruction-card {
+    display: none;
+  }
+  .spotify-overlay {
+    min-width: 240px;
+    bottom: 70px;
+  }
+}
